@@ -1,0 +1,124 @@
+﻿@page
+@model TimisStay.Pages.LogInModel
+@{
+    Layout = null;
+    ViewData["Title"] = "Log In";
+}
+<!doctype html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="icon" href="~/image/favicon.png" type="image/png">
+    <title>TimișStay</title>
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="~/css/bootstrap.css">
+    <link rel="stylesheet" href="~/vendors/linericon/style.css">
+    <link rel="stylesheet" href="~/css/font-awesome.min.css">
+    <link rel="stylesheet" href="~/vendors/owl-carousel/owl.carousel.min.css">
+    <link rel="stylesheet" href="~/vendors/bootstrap-datepicker/bootstrap-datetimepicker.min.css">
+    <link rel="stylesheet" href="~/vendors/nice-select/css/nice-select.css">
+    <link rel="stylesheet" href="~/css/style.css">
+    <link rel="stylesheet" href="~/css/responsive.css">
+
+    <style>
+        .login_section {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: url('@Url.Content("~/image/timisoara.jpg")') no-repeat center center;
+            background-size: cover;
+            position: relative;
+        }
+
+            .login_section::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background-color: rgba(0,0,0,0.6);
+            }
+
+        .login_card {
+            position: relative;
+            z-index: 2;
+            padding: 40px;
+            border-radius: 10px;
+            background-color: rgba(255,255,255,0.95);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        }
+
+            .login_card h3 {
+                font-weight: 700;
+                margin-bottom: 30px;
+                color: #333;
+            }
+
+        .btn-login {
+            background: #ff4c3b;
+            border: none;
+            width: 100%;
+            padding: 10px;
+            font-weight: bold;
+        }
+
+            .btn-login:hover {
+                background: #e43b2f;
+            }
+
+        .login_links {
+            margin-top: 15px;
+            text-align: center;
+        }
+
+            .login_links a {
+                color: #ff4c3b;
+                text-decoration: none;
+            }
+
+                .login_links a:hover {
+                    text-decoration: underline;
+                }
+    </style>
+</head>
+<body>
+
+    <section class="login_section">
+        <div class="login_card col-md-6 col-lg-4">
+            <h3 class="text-center">Log In</h3>
+            <form method="post">
+                <div class="form-group">
+                    <label for="credential">Email Or Username</label>
+                    <input type="text" id="credential" name="Credential" class="form-control" placeholder="Enter your email or username" required />
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="Parola" class="form-control" placeholder="Enter your password" required />
+                </div>
+                <button type="submit" class="btn theme_btn button_hover" style="width: 100%;">Log In</button>
+            </form>
+            <div asp-validation-summary="All" class="text-danger mt-3"></div>
+            <div class="login_links">
+                <a href="/Inregistrare">Don't have an account? Sign up!</a>
+            </div>
+        </div>
+    </section>
+
+    <script src="~/js/jquery-3.2.1.min.js"></script>
+    <script src="~/js/popper.js"></script>
+    <script src="~/js/bootstrap.min.js"></script>
+    <script src="~/vendors/owl-carousel/owl.carousel.min.js"></script>
+    <script src="~/js/jquery.ajaxchimp.min.js"></script>
+    <script src="~/js/mail-script.js"></script>
+    <script src="~/vendors/bootstrap-datepicker/bootstrap-datetimepicker.min.js"></script>
+    <script src="~/vendors/nice-select/js/jquery.nice-select.js"></script>
+    <script src="~/js/stellar.js"></script>
+    <script src="~/vendors/lightbox/simpleLightbox.min.js"></script>
+    <script src="~/js/custom.js"></script>
+</body>
+</html>

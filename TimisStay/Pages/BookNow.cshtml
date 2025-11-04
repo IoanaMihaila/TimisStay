@@ -1,0 +1,203 @@
+﻿@page
+@model TimisStay.Pages.BookNowModel
+@{
+    ViewData["Title"] = "Book Now";
+    var numeUtilizator = HttpContext.Session.GetString("UserName");
+}
+
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="icon" href="~/image/favicon.png" type="image/png">
+    <title>TimișStay - Book Now</title>
+
+    <link rel="stylesheet" href="~/css/bootstrap.css">
+    <link rel="stylesheet" href="~/vendors/linericon/style.css">
+    <link rel="stylesheet" href="~/css/font-awesome.min.css">
+    <link rel="stylesheet" href="~/vendors/owl-carousel/owl.carousel.min.css">
+    <link rel="stylesheet" href="~/vendors/bootstrap-datepicker/bootstrap-datetimepicker.min.css">
+    <link rel="stylesheet" href="~/vendors/nice-select/css/nice-select.css">
+    <link rel="stylesheet" href="~/css/style.css">
+    <link rel="stylesheet" href="~/css/responsive.css">
+
+    <style>
+        .room-img {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+        }
+
+        .accomodation_item {
+            border: 1px solid #eee;
+            border-radius: 10px;
+            overflow: hidden;
+            transition: transform 0.3s;
+        }
+
+            .accomodation_item:hover {
+                transform: translateY(-5px);
+            }
+
+        .badge-status {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            padding: 5px 10px;
+            border-radius: 5px;
+            color: #fff;
+            text-transform: uppercase;
+            font-size: 12px;
+        }
+    </style>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+    <div class="container text-center mt-3">
+        @if (!string.IsNullOrEmpty(numeUtilizator))
+        {
+            <h5 class="m-0">Welcome, <strong>@numeUtilizator</strong>!</h5>
+        }
+        else
+        {
+            <h5 class="m-0">Welcome, guest!</h5>
+        }
+    </div>
+
+    <!-- Banner -->
+    <section class="banner_area" style="background: url('@Url.Content("~/image/timisoara.jpg")') no-repeat center center; background-size: cover;">
+        <div style="background-color: rgba(0,0,0,0.6); padding: 60px 0;">
+            <div class="container text-center text-light">
+                <h2>Book Your Dream Room</h2>
+                <p>Plan your perfect stay</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Booking Form -->
+    <section class="section_gap">
+        <div class="container">
+            <div class="row justify-content-center mb-5">
+                <div class="col-lg-10">
+                    <form method="post" class="row g-3">
+                        <div class="col-md-4">
+                            <input type="date" class="form-control" name="CheckInDate" id="checkIn" required />
+                        </div>
+                        <div class="col-md-4">
+                            <input type="date" class="form-control" name="CheckOutDate" id="checkOut" required />
+                        </div>
+                        <div class="col-md-2">
+                            <select class="form-select" name="NrAdults" required>
+                                <option value="">Adults</option>
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <select class="form-select" name="NrChildren" required>
+                                <option value="0">Children</option>
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                            </select>
+                        </div>
+                        <div class="col-12 text-center mt-2">
+                            <button type="submit" class="btn btn-danger px-4">Search</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('checkIn').setAttribute('min', today);
+            document.getElementById('checkOut').setAttribute('min', today);
+        });
+    </script>
+
+    <!-- Available Rooms -->
+    <section class="accomodation_area section_gap">
+        <div class="container">
+            @if (Model.AvailableRooms != null && Model.AvailableRooms.Count > 0)
+            {
+                <div class="row g-4">
+                    @foreach (var room in Model.AvailableRooms)
+                    {
+                        <div class="col-lg-4 col-md-6 col-sm-12">
+                            <div class="accomodation_item text-center">
+                                <div class="hotel_img position-relative">
+                                    <img src="@room.Photo" alt="@room.RoomType" class="img-fluid room-img" />
+                                </div>
+                                <div class="p-3">
+                                    <h4 class="sec_h4">@room.RoomType</h4>
+                                    <p>@room.PricePerNight.ToString("C") / night</p>
+                                    <p>Max @room.MaxAdults adults, @room.MaxChildren children</p>
+                                    <form method="post">
+                                        <button type="submit"
+                                                formaction="?handler=Book&roomId=@room.RoomId&nrAdults=@Model.NrAdults&nrChildren=@Model.NrChildren&checkIn=@Model.CheckInDate.ToString("yyyy-MM-dd")&checkOut=@Model.CheckOutDate.ToString("yyyy-MM-dd")"
+                                                class="btn btn-danger w-100 mt-2">
+                                            Book Now
+                                        </button>
+                                        <a asp-page="/RoomDetails"
+                                           asp-route-roomId="@room.RoomId"
+                                           asp-route-checkIn="@Model.CheckInDate.ToString("yyyy-MM-dd")"
+                                           asp-route-checkOut="@Model.CheckOutDate.ToString("yyyy-MM-dd")"
+                                           asp-route-nrAdults="@Model.NrAdults"
+                                           asp-route-nrChildren="@Model.NrChildren"
+                                           class="btn btn-outline-primary w-100 mt-2">
+                                            View Details
+                                        </a>
+
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+            else if (HttpContext.Request.Method == "POST")
+            {
+                <div class="text-center mt-5">
+                    <h4>No rooms match your criteria.</h4>
+                </div>
+            }
+        </div>
+    </section>
+
+    <script src="~/js/jquery-3.2.1.min.js"></script>
+    <script src="~/js/popper.js"></script>
+    <script src="~/js/bootstrap.min.js"></script>
+    <script src="~/vendors/nice-select/js/jquery.nice-select.js"></script>
+    <script src="~/js/custom.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            var bookingSuccess = '@TempData["BookingSuccess"]' === 'True';
+            if (bookingSuccess) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Pending Booking!',
+                    text: 'Your reservation has been successfully created, but it needs for the receptionist\'s confirmation.',
+                    confirmButtonText: 'OK'
+                });
+            }
+
+            var bookingError = '@TempData["BookingError"]';
+            if (bookingError) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Invalid Dates',
+                    text: bookingError,
+                    confirmButtonText: 'OK'
+                });
+            }
+        });
+    </script>
+</body>
+</html>

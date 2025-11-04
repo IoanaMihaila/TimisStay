@@ -1,0 +1,299 @@
+﻿@page
+@model TimisStay.Pages.MyBookingsModel
+@{
+    ViewData["Title"] = "My Bookings";
+    var numeUtilizator = HttpContext.Session.GetString("UserName");
+}
+
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="icon" href="~/image/favicon.png" type="image/png">
+    <title>TimișStay - My Bookings</title>
+
+    <link rel="stylesheet" href="~/css/bootstrap.css">
+    <link rel="stylesheet" href="~/vendors/linericon/style.css">
+    <link rel="stylesheet" href="~/css/font-awesome.min.css">
+    <link rel="stylesheet" href="~/vendors/owl-carousel/owl.carousel.min.css">
+    <link rel="stylesheet" href="~/vendors/bootstrap-datepicker/bootstrap-datetimepicker.min.css">
+    <link rel="stylesheet" href="~/vendors/nice-select/css/nice-select.css">
+    <link rel="stylesheet" href="~/css/style.css">
+    <link rel="stylesheet" href="~/css/responsive.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+
+<body>
+    <div class="container text-center mt-3">
+        @if (!string.IsNullOrEmpty(numeUtilizator))
+        {
+            <h5 class="m-0">Welcome back, <strong>@numeUtilizator</strong>!</h5>
+        }
+        else
+        {
+            <h5 class="m-0">Welcome, guest!</h5>
+        }
+    </div>
+
+    <section class="banner_area" style="background: url('@Url.Content("~/image/timisoara.jpg")') no-repeat center center; background-size: cover;">
+        <div style="background-color: rgba(0, 0, 0, 0.6); padding: 60px 0;">
+            <div class="container text-center text-light">
+                <h2>My Bookings</h2>
+                <p>View and manage your reservations</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="accomodation_area section_gap">
+        <div class="container">
+            @if (Model.MyBookings != null && Model.MyBookings.Count > 0)
+            {
+                <div class="row mb_30">
+                    @foreach (var booking in Model.MyBookings)
+                    {
+                        var roomBooking = booking.RoomBookings.FirstOrDefault();
+                        var roomPhoto = roomBooking?.Room?.Photo ?? "image/no_image_available.png";
+
+                        <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                            <div class="accomodation_item text-center">
+                                <div class="hotel_img position-relative">
+                                    <img src="@roomPhoto" alt="Room Image" class="img-fluid" style="height:250px; width:100%; object-fit:cover;" />
+                                    <span class="badge bg-@(booking.Status == "Confirmed" ? "success" : booking.Status == "Pending" ? "warning" : "secondary") position-absolute m-3 p-2 text-uppercase">
+                                        @booking.Status
+                                    </span>
+                                </div>
+                                <div class="p-3">
+                                    <h4 class="sec_h4">@booking.RoomType</h4>
+                                    <p><strong>Check-in:</strong> @booking.CheckInDate.ToString("dd MMM yyyy")</p>
+                                    <p><strong>Check-out:</strong> @booking.CheckOutDate.ToString("dd MMM yyyy")</p>
+                                    <p><strong>Guests:</strong> @booking.NrAdults adults, @booking.NrChildren children</p>
+                                    <p><strong>Total:</strong> @booking.TotalPrice.ToString("C")</p>
+                                    <p><strong>Status:</strong> @booking.Status</p>
+
+                                    <!-- 🔸 Buton care declanșează SweetAlert -->
+                                    @if (!string.Equals(booking.Status, "Canceled", StringComparison.OrdinalIgnoreCase))
+                                    {
+                                    <button type="button" class="btn btn-danger btn-sm mt-2 cancel-btn" data-id="@booking.BookingId">
+                                        Cancel Booking
+                                    </button>
+                                    }
+
+                                    <!-- 🔹 Formular ascuns care se trimite după confirmare -->
+                                    <form id="cancelForm-@booking.BookingId" method="post" asp-page-handler="CancelBooking" asp-route-id="@booking.BookingId"></form>
+
+                                    <!-- 🔹 Buton Edit -->
+                                    <button type="button" class="btn btn-primary btn-sm mt-2" data-bs-toggle="modal" data-bs-target="#editModal-@booking.BookingId">
+                                        Edit Booking
+                                    </button>
+
+
+                                    <!-- 🔹 Modal pentru edit -->
+                                    <div class="modal fade" id="editModal-@booking.BookingId" tabindex="-1" aria-labelledby="editModalLabel-@booking.BookingId" aria-hidden="true">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <form method="post" asp-page-handler="EditBooking">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="editModalLabel-@booking.BookingId">Edit Booking</h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <input type="hidden" name="BookingId" value="@booking.BookingId" />
+
+                                                        <div class="mb-3">
+                                                            <label class="form-label">Check-in Date</label>
+                                                            <input type="date" name="CheckInDate" class="form-control" value="@booking.CheckInDate.ToString("yyyy-MM-dd")"
+                                                                   required min="@DateTime.Now.ToString("yyyy-MM-dd")" />
+                                                        </div>
+                                                        <div class="mb-3">
+                                                            <label class="form-label">Check-out Date</label>
+                                                            <input type="date" name="CheckOutDate" class="form-control" value="@booking.CheckOutDate.ToString("yyyy-MM-dd")"
+                                                                   required min="@DateTime.Now.AddDays(1).ToString("yyyy-MM-dd")" />
+                                                        </div>
+
+                                                        <div class="mb-3">
+                                                            <label class="form-label">Number of Adults</label>
+                                                            <input type="number" name="NrAdults" class="form-control" min="1" value="@booking.NrAdults" required />
+                                                        </div>
+                                                        <div class="mb-3">
+                                                            <label class="form-label">Number of Children</label>
+                                                            <input type="number" name="NrChildren" class="form-control" min="0" value="@booking.NrChildren" required />
+                                                        </div>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="text-center mt-5">
+                    <h4>You have no bookings yet.</h4>
+                    <p>Start planning your next stay!</p>
+                    <a href="/BookNow" class="btn btn-danger mt-3">Book a Room</a>
+                </div>
+            }
+        </div>
+    </section>
+    @if (Model.PastBookings != null && Model.PastBookings.Count > 0)
+    {
+        <section class="review_area section_gap_bottom">
+            <div class="container">
+                <div class="section_title text-center mb-4">
+                    <h2 class="title_color">Share Your Experience</h2>
+                    <p>We’d love to hear your feedback about your previous stays!</p>
+                </div>
+
+                <div class="row justify-content-center">
+                    <div class="col-lg-8">
+                        <form method="post" asp-page-handler="AddReview" class="review-form p-4 border rounded shadow-sm bg-light">
+                            <div class="form-group mb-3">
+                                <label for="Rating" class="form-label"><strong>Rating:</strong></label>
+                                <select class="form-select" id="Rating" name="Rating" required>
+                                    <option value="">Select Rating</option>
+                                    <option value="5">⭐⭐⭐⭐⭐ - Excellent</option>
+                                    <option value="4">⭐⭐⭐⭐ - Very Good</option>
+                                    <option value="3">⭐⭐⭐ - Good</option>
+                                    <option value="2">⭐⭐ - Fair</option>
+                                    <option value="1">⭐ - Poor</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group mb-3">
+                                <label for="Comment" class="form-label"><strong>Your Comment:</strong></label>
+                                <textarea class="form-control" id="Comment" name="Comment" rows="4" placeholder="Tell us about your stay..." required></textarea>
+                            </div>
+
+                            <div class="text-center">
+                                <button type="submit" class="btn btn-danger px-4">Submit Review</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+    }
+
+    <script src="~/js/jquery-3.2.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-..." crossorigin="anonymous"></script>
+    <script src="~/vendors/owl-carousel/owl.carousel.min.js"></script>
+    <script src="~/vendors/nice-select/js/jquery.nice-select.js"></script>
+    <script src="~/js/custom.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $(".cancel-btn").click(function () {
+                var bookingId = $(this).data("id");
+
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "Do you really want to cancel this booking?",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: 'Yes, cancel it'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Trimite formularul ascuns corespunzător rezervării
+                        $("#cancelForm-" + bookingId).submit();
+                    }
+                });
+            });
+
+            // Dacă ștergerea a avut succes, afișăm un mesaj SweetAlert
+            var cancelSuccess = '@TempData["CancelSuccess"]' === 'True';
+            if (cancelSuccess) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Booking Cancelled',
+                    text: 'Your booking has been successfully cancelled.',
+                    confirmButtonText: 'OK'
+                }).then(() => {
+                    location.reload(); // 🔁 Refresh automat după confirmare
+                });
+            }
+        });
+    </script>
+    <script>
+        $(document).ready(function () {
+            $(".cancel-btn").click(function () {
+                var bookingId = $(this).data("id");
+
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "Do you really want to cancel this booking?",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: 'Yes, cancel it'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $("#cancelForm-" + bookingId).submit();
+                    }
+                });
+            });
+
+            // Mesaj pentru anulare cu succes
+            var cancelSuccess = '@TempData["CancelSuccess"]' === 'True';
+            if (cancelSuccess) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Booking Cancelled',
+                    text: 'Your booking has been successfully cancelled.',
+                    confirmButtonText: 'OK'
+                }).then(() => location.reload());
+            }
+
+            // Mesaj pentru adăugare recenzie
+            var reviewSuccess = '@TempData["ReviewSuccess"]' === 'True';
+            if (reviewSuccess) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Thank you!',
+                    text: 'Your review has been submitted successfully.',
+                    confirmButtonText: 'OK'
+                });
+            }
+        });
+
+                var editSuccess = '@TempData["EditSuccess"]' === 'True';
+        if (editSuccess) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Booking Updated',
+                text: 'Your booking has been successfully updated.',
+                confirmButtonText: 'OK'
+            }).then(() => location.reload());
+        }
+
+                var editError = '@TempData["ErrorMessage"]';
+        if (editError) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Update Failed',
+                text: editError,
+                confirmButtonText: 'OK'
+            });
+        }
+
+
+                $('input[name="CheckInDate"]').on('change', function() {
+            var checkIn = $(this).val();
+            $(this).closest('form').find('input[name="CheckOutDate"]').attr('min', checkIn);
+        });
+
+    </script>
+</body>
+</html>

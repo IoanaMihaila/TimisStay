@@ -1,0 +1,150 @@
+﻿@page
+@model TimisStay.Pages.ManageBookingsModel
+@{
+    ViewData["Title"] = "All Bookings";
+    var numeUtilizator = HttpContext.Session.GetString("UserName");
+}
+
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="icon" href="~/image/favicon.png" type="image/png">
+    <title>TimișStay - All Bookings</title>
+
+    <link rel="stylesheet" href="~/css/bootstrap.css">
+    <link rel="stylesheet" href="~/vendors/linericon/style.css">
+    <link rel="stylesheet" href="~/css/font-awesome.min.css">
+    <link rel="stylesheet" href="~/vendors/owl-carousel/owl.carousel.min.css">
+    <link rel="stylesheet" href="~/css/style.css">
+    <link rel="stylesheet" href="~/css/responsive.css">
+
+    <style>
+        .booking-card {
+            border: 1px solid #eee;
+            border-radius: 10px;
+            overflow: hidden;
+            transition: transform 0.3s;
+            background-color: #fff;
+        }
+
+            .booking-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            }
+
+        .room-img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .badge-status {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            padding: 5px 10px;
+            border-radius: 5px;
+            color: #fff;
+            font-size: 12px;
+            text-transform: uppercase;
+        }
+
+            .badge-status.confirmed {
+                background-color: #28a745;
+            }
+
+            .badge-status.pending {
+                background-color: #ffc107;
+                color: #000;
+            }
+
+            .badge-status.canceled {
+                background-color: #dc3545;
+            }
+    </style>
+</head>
+
+<body>
+    <div class="container text-center mt-3">
+        @if (!string.IsNullOrEmpty(numeUtilizator))
+        {
+            <h5>Welcome, <strong>@numeUtilizator</strong>!</h5>
+        }
+        else
+        {
+            <h5>Welcome, guest!</h5>
+        }
+    </div>
+
+    <!-- Banner -->
+    <section class="banner_area" style="background: url('@Url.Content("~/image/timisoara.jpg")') no-repeat center center; background-size: cover;">
+        <div style="background-color: rgba(0,0,0,0.6); padding: 60px 0;">
+            <div class="container text-center text-light">
+                <h2>All Bookings</h2>
+                <p>Overview of all reservations</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Bookings List -->
+    <section class="accomodation_area section_gap">
+        <div class="container">
+            @if (Model.Bookings != null && Model.Bookings.Count > 0)
+            {
+                <div class="row g-4">
+                    @foreach (var booking in Model.Bookings)
+                    {
+                        var user = booking.UserBookings.FirstOrDefault()?.User;
+                        var userName = user != null ? $"{user.LastName} {user.FirstName}" : "Unknown User";
+                        var roomName = booking.RoomBookings.FirstOrDefault()?.Room?.RoomType ?? booking.RoomType;
+
+                        <div class="col-lg-4 col-md-6 col-sm-12">
+                            <div class="booking-card">
+                                <div class="position-relative">
+                                    <img src="@(booking.RoomBookings.FirstOrDefault()?.Room?.Photo ?? Url.Content("~/image/default-room.jpg"))"
+                                         alt="@roomName"
+                                         class="img-fluid room-img" />
+                                    <span class="badge-status @(booking.Status.ToLower())">@booking.Status</span>
+                                </div>
+                                <div class="p-3">
+                                    <h4 class="sec_h4">@roomName</h4>
+                                    <p><strong>Guest:</strong> @userName</p>
+                                    <p><strong>Period:</strong> @booking.CheckInDate.ToString("dd MMM yyyy") - @booking.CheckOutDate.ToString("dd MMM yyyy")</p>
+                                    <p><strong>Adults:</strong> @booking.NrAdults | <strong>Children:</strong> @booking.NrChildren</p>
+                                    <p><strong>Total Price:</strong> @booking.TotalPrice.ToString("C")</p>
+
+                                    <div class="d-flex justify-content-between mt-3">
+                                        @* Afișează butonul Confirm doar dacă rezervarea NU este Confirmed *@
+                                        @if (!string.Equals(booking.Status, "Confirmed", StringComparison.OrdinalIgnoreCase))
+                                        {
+                                            <form method="post" asp-page-handler="Confirm" asp-route-bookingId="@booking.BookingId">
+                                                <button type="submit" class="btn btn-success btn-sm w-100 me-2">Confirm</button>
+                                            </form>
+                                        }
+
+                                        <form method="post" asp-page-handler="Cancel" asp-route-bookingId="@booking.BookingId">
+                                            <button type="submit" class="btn btn-danger btn-sm w-100">Delete</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="text-center mt-5">
+                    <h4>No bookings found.</h4>
+                </div>
+            }
+        </div>
+    </section>
+    <script src="~/js/jquery-3.2.1.min.js"></script>
+    <script src="~/js/bootstrap.min.js"></script>
+    <script src="~/vendors/nice-select/js/jquery.nice-select.js"></script>
+    <script src="~/js/custom.js"></script>
+</body>
+</html>

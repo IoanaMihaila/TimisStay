@@ -1,0 +1,149 @@
+﻿@page
+@model TimisStay.Pages.SignInModel
+@{
+    Layout = null;
+    ViewData["Title"] = "Sign Up";
+}
+<!doctype html>
+<html lang="ro">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="icon" href="~/image/favicon.png" type="image/png">
+    <title>TimișStay</title>
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="~/css/bootstrap.css">
+    <link rel="stylesheet" href="~/vendors/linericon/style.css">
+    <link rel="stylesheet" href="~/css/font-awesome.min.css">
+    <link rel="stylesheet" href="~/vendors/owl-carousel/owl.carousel.min.css">
+    <link rel="stylesheet" href="~/vendors/bootstrap-datepicker/bootstrap-datetimepicker.min.css">
+    <link rel="stylesheet" href="~/vendors/nice-select/css/nice-select.css">
+    <link rel="stylesheet" href="~/css/style.css">
+    <link rel="stylesheet" href="~/css/responsive.css">
+
+    <style>
+        .register_section {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: url('@Url.Content("~/image/timisoara.jpg")') no-repeat center center;
+            background-size: cover;
+            position: relative;
+        }
+
+            .register_section::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background-color: rgba(0,0,0,0.6);
+            }
+
+        .register_card {
+            position: relative;
+            z-index: 2;
+            padding: 40px;
+            border-radius: 10px;
+            background-color: rgba(255,255,255,0.95);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        }
+
+            .register_card h3 {
+                font-weight: 700;
+                margin-bottom: 30px;
+                color: #333;
+            }
+
+        .btn-register {
+            background: #ff4c3b;
+            border: none;
+            width: 100%;
+            padding: 10px;
+            font-weight: bold;
+        }
+
+            .btn-register:hover {
+                background: #e43b2f;
+            }
+
+        .register_links {
+            margin-top: 15px;
+            text-align: center;
+        }
+
+            .register_links a {
+                color: #ff4c3b;
+                text-decoration: none;
+            }
+
+                .register_links a:hover {
+                    text-decoration: underline;
+                }
+    </style>
+</head>
+<body>
+
+    <section class="register_section">
+        <div class="register_card col-md-6 col-lg-5">
+            <h3 class="text-center">Sign Up</h3>
+            <form method="post">
+                <div class="form-group">
+                    <label for="lastName">Last Name</label>
+                    <input type="text" id="lastName" name="LastName" class="form-control" placeholder="Insert your last name" required />
+                </div>
+                <div class="form-group">
+                    <label for="firstName">First Name</label>
+                    <input type="text" id="firstName" name="FirstName" class="form-control" placeholder="Insert your first name" required />
+                </div>
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" name="Email" class="form-control" placeholder="Enter your email address" required />
+                </div>
+                <div class="form-group">
+                    <label for="phone">Phone Number</label>
+                    <input type="tel" id="phone" name="Phone" class="form-control" placeholder="Enter your phone number (e.g. 07xxxxxxxx)" pattern="[0-9]{10}" required />
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="Password" class="form-control" placeholder="Enter your password" required />
+                </div>
+                <div class="form-group">
+                    <label for="confirmPassword">Confirm Password</label>
+                    <input type="password" id="confirmPassword" name="ConfirmPassword" class="form-control" placeholder="Re-enter your password" required />
+                </div>
+                <button type="submit" class="btn theme_btn button_hover" style="width: 100%;">Sign Up</button>
+            </form>
+
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <div class="alert alert-success mt-3">@TempData["SuccessMessage"]</div>
+            }
+
+            <div asp-validation-summary="All" class="text-danger mt-3"></div>
+
+            <div asp-validation-summary="All" class="text-danger mt-3"></div>
+
+            <div class="register_links">
+                <a href="/LogIn">Already have an account? Log In!</a>
+            </div>
+        </div>
+    </section>
+
+    <script src="~/js/jquery-3.2.1.min.js"></script>
+    <script src="~/js/popper.js"></script>
+    <script src="~/js/bootstrap.min.js"></script>
+    <script src="~/vendors/owl-carousel/owl.carousel.min.js"></script>
+    <script src="~/js/jquery.ajaxchimp.min.js"></script>
+    <script src="~/js/mail-script.js"></script>
+    <script src="~/vendors/bootstrap-datepicker/bootstrap-datetimepicker.min.js"></script>
+    <script src="~/vendors/nice-select/js/jquery.nice-select.js"></script>
+    <script src="~/js/stellar.js"></script>
+    <script src="~/vendors/lightbox/simpleLightbox.min.js"></script>
+    <script src="~/js/custom.js"></script>
+</body>
+</html>

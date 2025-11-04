@@ -1,0 +1,119 @@
+﻿@page
+@model TimisStay.Pages.GalleryModel
+@{
+    ViewData["Title"] = "Gallery";
+    var userRole = HttpContext.Session.GetString("UserRole") ?? "";
+}
+
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="icon" href="~/image/favicon.png" type="image/png">
+    <title>@ViewData["Title"] - TimisStay</title>
+
+    <link rel="stylesheet" href="~/css/bootstrap.css">
+    <link rel="stylesheet" href="~/vendors/linericon/style.css">
+    <link rel="stylesheet" href="~/css/font-awesome.min.css">
+    <link rel="stylesheet" href="~/vendors/bootstrap-datepicker/bootstrap-datetimepicker.min.css">
+    <link rel="stylesheet" href="~/vendors/nice-select/css/nice-select.css">
+    <link rel="stylesheet" href="~/vendors/owl-carousel/owl.carousel.min.css">
+    <link rel="stylesheet" href="~/vendors/lightbox/simpleLightbox.css">
+    <link rel="stylesheet" href="~/css/style.css">
+    <link rel="stylesheet" href="~/css/responsive.css">
+</head>
+<body>
+    <!--================Breadcrumb Area =================-->
+    <section class="breadcrumb_area" style="background: url('@Url.Content("~/image/timisoara.jpg")') no-repeat center center; background-size: cover; position: relative;">
+        <!-- overlay semi-transparent pentru efect vizual -->
+        <div style="position:absolute; top:0; left:0; width:100%; height:100%; background-color: rgba(0,0,0,0.5); z-index:1;"></div>
+
+        <div class="container" style="position: relative; z-index:2;">
+            <div class="page-cover text-center text-light">
+                <h2 class="page-cover-tittle">Gallery</h2>
+                <ol class="breadcrumb">
+                    <li><a href="/">Home</a></li>
+                    <li class="active">Gallery</li>
+                </ol>
+            </div>
+        </div>
+    </section>
+
+
+    <!--================Breadcrumb Area =================-->
+    <!--================Gallery Area =================-->
+    <section class="gallery_area section_gap">
+        <div class="container">
+            <div class="section_title text-center">
+                <h2 class="title_color">Hotel Gallery</h2>
+                <p>Discover our beautiful hotel spaces.</p>
+            </div>
+            @if (userRole == "Receptionist")
+            {
+                <div class="text-center mb-5">
+                    <div class="card mx-auto p-4" style="max-width: 400px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); border-radius: 15px;">
+                        <h5 class="mb-3">Upload a New Photo</h5>
+                        <form method="post" enctype="multipart/form-data" asp-page-handler="UploadPhoto">
+                            <div class="mb-3">
+                                <label for="PhotoFile" class="form-label">Choose an image</label>
+                                <input type="file" id="PhotoFile" name="PhotoFile" class="form-control" accept="image/*" required onchange="previewImage(event)" />
+                            </div>
+                            <div class="mb-3">
+                                <img id="preview" src="#" alt="Image Preview" style="display:none; max-width:100%; border-radius:10px; margin-top:10px;" />
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100" style="border-radius: 50px; font-weight:600;">Upload Photo</button>
+                        </form>
+                    </div>
+                </div>
+
+                <script>
+                    function previewImage(event) {
+                        const input = event.target;
+                        const preview = document.getElementById('preview');
+                        if (input.files && input.files[0]) {
+                            const reader = new FileReader();
+                            reader.onload = function(e) {
+                                preview.src = e.target.result;
+                                preview.style.display = 'block';
+                            }
+                            reader.readAsDataURL(input.files[0]);
+                        } else {
+                            preview.src = '#';
+                            preview.style.display = 'none';
+                        }
+                    }
+                </script>
+            }
+            <div class="row imageGallery1" id="gallery">
+                @foreach (var photo in Model.Photos)
+                {
+                    <div class="col-md-4 gallery_item">
+                        <div class="gallery_img">
+                            <img src="@photo.PhotoPath" alt="Hotel Photo">
+                            <div class="hover">
+                                <a class="light" href="@photo.PhotoPath"><i class="fa fa-expand"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </section>
+    <!--================Gallery Area =================-->
+    <!--================Footer Area =================-->
+    <footer class="footer-area section_gap">
+        <div class="container">
+            <p class="text-center">© <script>document.write(new Date().getFullYear());</script> TimisStay. All rights reserved.</p>
+        </div>
+    </footer>
+    <!--================Footer Area =================-->
+
+    <script src="~/js/jquery-3.2.1.min.js"></script>
+    <script src="~/js/popper.js"></script>
+    <script src="~/js/bootstrap.min.js"></script>
+    <script src="~/vendors/owl-carousel/owl.carousel.min.js"></script>
+    <script src="~/vendors/lightbox/simpleLightbox.min.js"></script>
+    <script src="~/js/custom.js"></script>
+</body>
+</html>

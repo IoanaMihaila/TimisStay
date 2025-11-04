@@ -1,0 +1,86 @@
+﻿@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+
+@{
+    var userRole = HttpContextAccessor.HttpContext.Session.GetString("UserRole");
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="~/image/favicon.png" type="image/png">
+    <title>@ViewData["Title"] - TimișStay</title>
+
+    <link href="~/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/vendors/linericon/style.css" rel="stylesheet" />
+    <link href="~/css/font-awesome.min.css" rel="stylesheet" />
+    <link href="~/vendors/owl-carousel/owl.carousel.min.css" rel="stylesheet" />
+    <link href="~/vendors/bootstrap-datepicker/bootstrap-datetimepicker.min.css" rel="stylesheet" />
+    <link href="~/vendors/nice-select/css/nice-select.css" rel="stylesheet" />
+    <link href="~/css/style.css" rel="stylesheet" />
+    <link href="~/css/responsive.css" rel="stylesheet" />
+</head>
+<body>
+    <!--================Header Area =================-->
+    <header class="header_area">
+        <div class="container">
+            <nav class="navbar navbar-expand-lg navbar-light">
+                <a class="navbar-brand logo_h" asp-page="/Index" style="font-family: 'Brush Script MT', cursive; font-size: 36px; color: #000; text-decoration: none;">
+                    TimișStay
+                </a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+                        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+
+                <div class="collapse navbar-collapse offset" id="navbarSupportedContent">
+                    <ul class="nav navbar-nav menu_nav ml-auto">
+                        @if (string.Equals(userRole, "Receptionist", StringComparison.OrdinalIgnoreCase))
+                        {
+                            <!-- Meniu pentru Receptionist -->
+                            <li class="nav-item active"><a class="nav-link" asp-page="/Index">Home</a></li>
+                            <li class="nav-item"><a class="nav-link" asp-page="/ManageBookings">Manage Bookings</a></li>
+                            <li class="nav-item"><a class="nav-link" asp-page="/ManageRooms">Manage Rooms</a></li>
+                            <li class="nav-item"><a class="nav-link" asp-page="/Gallery">Gallery</a></li>
+                            <li class="nav-item"><a class="nav-link" asp-page="/LogIn">Log Out</a></li>
+                        }
+                        else
+                        {
+                            <!-- Meniu standard pentru alți utilizatori -->
+                            <li class="nav-item active"><a class="nav-link" asp-page="/Index">Home</a></li>
+                            <li class="nav-item"><a class="nav-link" asp-page="/BookNow">Book Now</a></li>
+                            <li class="nav-item"><a class="nav-link" asp-page="/MyBookings">My Bookings</a></li>
+                            <li class="nav-item"><a class="nav-link" asp-page="/Gallery">Gallery</a></li>
+                            <li class="nav-item"><a class="nav-link" asp-page="/LogIn">Log Out</a></li>
+                        }
+                    </ul>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main role="main" class="pt-5 mt-5">
+        @RenderBody()
+    </main>
+
+    <!-- Footer -->
+    <footer class="text-center py-4 bg-dark text-light mt-5">
+        <p class="mb-0">© 2025 TimișStay — Discover & Relax</p>
+    </footer>
+
+    <script src="~/js/jquery-3.2.1.min.js"></script>
+    <script src="~/js/popper.js"></script>
+    <script src="~/js/bootstrap.min.js"></script>
+    <script src="~/vendors/owl-carousel/owl.carousel.min.js"></script>
+    <script src="~/vendors/bootstrap-datepicker/bootstrap-datetimepicker.min.js"></script>
+    <script src="~/vendors/nice-select/js/jquery.nice-select.js"></script>
+    <script src="~/js/custom.js"></script>
+
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

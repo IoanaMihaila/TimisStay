@@ -1,0 +1,226 @@
+﻿@page
+@model IndexModel
+@{
+    Layout = null;
+    ViewData["Title"] = "Home";
+    var numeUtilizator = HttpContext.Session.GetString("UserName");
+}
+
+<!doctype html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="icon" href="~/image/favicon.png" type="image/png">
+    <title>TimișStay</title>
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="~/css/bootstrap.css">
+    <link rel="stylesheet" href="~/vendors/linericon/style.css">
+    <link rel="stylesheet" href="~/css/font-awesome.min.css">
+    <link rel="stylesheet" href="~/vendors/owl-carousel/owl.carousel.min.css">
+    <link rel="stylesheet" href="~/vendors/bootstrap-datepicker/bootstrap-datetimepicker.min.css">
+    <link rel="stylesheet" href="~/vendors/nice-select/css/nice-select.css">
+    <link rel="stylesheet" href="~/css/style.css">
+    <link rel="stylesheet" href="~/css/responsive.css">
+</head>
+<body>
+    <!--================Header Area =================-->
+    <header class="header_area">
+        <div class="container">
+            <nav class="navbar navbar-expand-lg navbar-light">
+                <a class="navbar-brand logo_h" asp-page="/Index" style="font-family: 'Brush Script MT', cursive; font-size: 36px; color: #000; text-decoration: none;">
+                    TimișStay
+                </a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+                        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <div class="collapse navbar-collapse offset" id="navbarSupportedContent">
+                    <ul class="nav navbar-nav menu_nav ml-auto">
+                        <li class="nav-item active"><a class="nav-link" asp-page="/Index">Home</a></li>
+                        <li class="nav-item"><a class="nav-link" asp-page="/SignIn">Sign Up</a></li>
+                        <li class="nav-item"><a class="nav-link" asp-page="/LogIn">Log In</a></li>
+                        <li class="nav-item"><a class="nav-link" asp-page="/Gallery">Gallery</a></li>
+                    </ul>
+                </div>
+            </nav>
+        </div>
+    </header>
+    <!--================Header Area =================-->
+    <!--================Banner Area =================-->
+    <section class="banner_area" style="background: url('@Url.Content("~/image/timisoara.jpg")') no-repeat center center; background-size: cover; position: relative;">
+        <!-- Overlay semi-transparent -->
+        <div style="position:absolute; top:0; left:0; width:100%; height:100%; background-color: rgba(0,0,0,0.5); z-index:1;"></div>
+
+        <div class="booking_table d_flex align-items-center" style="position: relative; z-index:2;">
+            <div class="container">
+                <div class="banner_content text-center text-light">
+                    <h6>Discover our accommodation and relaxation places in Timișoara</h6>
+                    <h2>Welcome to TimișStay</h2>
+                    <p>Local platform for bookings, accommodation, and authentic experiences in Timișoara.</p>
+                    <a asp-page="/SignIn" class="btn theme_btn button_hover">Sign In</a>
+                    <a asp-page="/LogIn" class="btn theme_btn button_hover">Log In</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+
+    <!--================Banner Area =================-->
+    <!--================ Accomodation Area  =================-->
+    <!--================ Accomodation Area  =================-->
+    <section class="accomodation_area section_gap">
+        <div class="container">
+            <div class="section_title text-center">
+                <h2 class="title_color">Recommended accommodations</h2>
+                <p>Experience local hospitality and authentic comfort in Timișoara.</p>
+            </div>
+            <div class="row mb_30">
+                <div class="col-lg-3 col-sm-6">
+                    <div class="accomodation_item text-center">
+                        <div class="hotel_img">
+                            <img src="~/image/room1.jpg" alt="">
+                            <a href="/LogIn" class="btn theme_btn button_hover">Book Now</a>
+                        </div>
+                        <a href="#"><h4 class="sec_h4">Premium Apartment</h4></a>>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-sm-6">
+                    <div class="accomodation_item text-center">
+                        <div class="hotel_img">
+                            <img src="~/image/room2.jpg" alt="">
+                            <a href="/LogIn" class="btn theme_btn button_hover">Book Now</a>
+                        </div>
+                        <a href="#"><h4 class="sec_h4">Central Studio Apartment</h4></a>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-sm-6">
+                    <div class="accomodation_item text-center">
+                        <div class="hotel_img">
+                            <img src="~/image/room3.jpg" alt="">
+                            <a href="/LogIn" class="btn theme_btn button_hover">Book Now</a>
+                        </div>
+                        <a href="#"><h4 class="sec_h4">Cameră Deluxe</h4></a>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-sm-6">
+                    <div class="accomodation_item text-center">
+                        <div class="hotel_img">
+                            <img src="~/image/room4.jpg" alt="">
+                            <a href="#" class="btn theme_btn button_hover">Book Now</a>
+                        </div>
+                        <a href="/LogIn"><h4 class="sec_h4">Deluxe Room</h4></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!--================ Accomodation Area  =================-->
+    <!--================ Reviews Section =================-->
+    <section class="testimonial_area section_gap">
+        <div class="container">
+            <div class="section_title text-center">
+                <h2 class="title_color">What Our Guests Say</h2>
+                <p>See how others enjoyed their stay at TimișStay</p>
+            </div>
+
+            @if (Model.Reviews != null && Model.Reviews.Any())
+            {
+                <div class="row justify-content-center">
+                    @foreach (var review in Model.Reviews)
+                    {
+                        <div class="col-lg-4 col-md-6 mb-4">
+                            <div class="card p-4 shadow-sm">
+                                <div class="d-flex align-items-center mb-3">
+                                    <div>
+                                        <h5 class="mb-0">@review.User.FirstName @review.User.LastName</h5>
+                                        <div>
+                                            @for (int i = 1; i <= 5; i++)
+                                            {
+                                                if (i <= review.Rating)
+                                                {
+                                                    <i class="fa fa-star text-warning"></i>
+                                                }
+                                                else
+                                                {
+                                                    <i class="fa fa-star-o text-muted"></i>
+                                                }
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                                <p class="text-muted">@review.Comment</p>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="text-center">
+                    <p>No reviews available yet.</p>
+                </div>
+            }
+        </div>
+    </section>
+    <!--================ End Reviews Section =================-->
+
+    <!--================ Footer Area =================-->
+    <footer class="footer-area section_gap">
+        <div id="map" style="height: 400px; width: 100%;"></div>
+    </footer>
+    <!--================ End Footer Area =================-->
+    <!-- Scripts -->
+    <script src="~/js/jquery-3.2.1.min.js"></script>
+    <script src="~/js/popper.js"></script>
+    <script src="~/js/bootstrap.min.js"></script>
+    <script src="~/vendors/owl-carousel/owl.carousel.min.js"></script>
+    <script src="~/js/jquery.ajaxchimp.min.js"></script>
+    <script src="~/js/mail-script.js"></script>
+    <script src="~/vendors/bootstrap-datepicker/bootstrap-datetimepicker.min.js"></script>
+    <script src="~/vendors/nice-select/js/jquery.nice-select.js"></script>
+    <script src="~/js/stellar.js"></script>
+    <script src="~/vendors/lightbox/simpleLightbox.min.js"></script>
+    <script src="~/js/custom.js"></script>
+
+</body>
+
+<script>
+    let map;
+
+    function initMap() {
+        // Harta centrată pe Timișoara
+        const timisoara = { lat: 45.7489, lng: 21.2087 };
+
+        map = new google.maps.Map(document.getElementById('map'), {
+            center: timisoara,
+            zoom: 13
+        });
+
+        // Adaugă un marker pe Timișoara
+        const marker = new google.maps.Marker({
+            position: timisoara,
+            map: map,
+            title: "Timișoara"
+        });
+    }
+
+    // Încarcă Google Maps API cu callback către initMap()
+    function loadGoogleMapsAPI() {
+        var script = document.createElement('script');
+        script.src = "https://maps.googleapis.com/maps/api/js?key=AIzaSyCd6i5o5eD1fOMu_Yc5ENGZUSveTqO91NA&callback=initMap";
+        script.async = true;
+        script.defer = true;
+        document.head.appendChild(script);
+    }
+
+    // Pornește încărcarea API-ului după ce pagina se încarcă
+    document.addEventListener("DOMContentLoaded", loadGoogleMapsAPI);
+</script>
+
+</html>

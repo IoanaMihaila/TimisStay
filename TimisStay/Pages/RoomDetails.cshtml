@@ -1,0 +1,204 @@
+﻿@page
+@model TimisStay.Pages.RoomDetailsModel
+@{
+    ViewData["Title"] = "Room Details";
+}
+
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="icon" href="~/image/favicon.png" type="image/png">
+    <title>@Model.Room.RoomType - TimisStay</title>
+
+    <link rel="stylesheet" href="~/css/bootstrap.css">
+    <link rel="stylesheet" href="~/vendors/linericon/style.css">
+    <link rel="stylesheet" href="~/css/font-awesome.min.css">
+    <link rel="stylesheet" href="~/vendors/nice-select/css/nice-select.css">
+    <link rel="stylesheet" href="~/vendors/owl-carousel/owl.carousel.min.css">
+    <link rel="stylesheet" href="~/vendors/lightbox/simpleLightbox.css">
+    <link rel="stylesheet" href="~/css/style.css">
+    <link rel="stylesheet" href="~/css/responsive.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+    <!--================Breadcrumb Area =================-->
+    <section class="breadcrumb_area" style="background: url('@Url.Content("~/image/rooms-bg.jpg")') no-repeat center center; background-size: cover; position: relative;">
+        <div style="position:absolute; top:0; left:0; width:100%; height:100%; background-color: rgba(0,0,0,0.55); z-index:1;"></div>
+
+        <div class="container" style="position: relative; z-index:2;">
+            <div class="page-cover text-center text-light">
+                <h2 class="page-cover-tittle">Room Details</h2>
+                <ol class="breadcrumb">
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/BookNow">Rooms</a></li>
+                    <li class="active">@Model.Room.RoomType</li>
+                </ol>
+            </div>
+        </div>
+    </section>
+    <!--================Breadcrumb Area =================-->
+    <!--================ Room Details Area =================-->
+    <section class="accomodation_area section_gap">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-10">
+                    <div class="card mb-4 shadow-lg border-0 rounded-3">
+                        <div class="row g-0">
+                            <div class="row g-3">
+                                <!-- Coloană pentru caruselul cu pozele detaliate -->
+                                <div class="col-md-6">
+                                    @if ((Model.Room.Photo != null) || (Model.Room.RoomDetailsPhotos != null && Model.Room.RoomDetailsPhotos.Any()))
+                                    {
+                                        <div id="roomDetailsCarousel" class="carousel slide" data-ride="carousel">
+                                            <div class="carousel-inner">
+                                                @{
+                                                    var allPhotos = new List<(string Path, string Caption)>();
+                                                    if (Model.Room.Photo != null)
+                                                        allPhotos.Add((Model.Room.Photo, "Main Photo"));
+
+                                                    if (Model.Room.RoomDetailsPhotos != null)
+                                                    {
+                                                        foreach (var photo in Model.Room.RoomDetailsPhotos)
+                                                        {
+                                                            allPhotos.Add((photo.PhotoPath, photo.Category ?? ""));
+                                                        }
+                                                    }
+
+                                                    bool first = true;
+                                                }
+
+                                                @foreach (var photo in allPhotos)
+                                                {
+                                                    <div class="carousel-item @(first ? "active" : "")">
+                                                        <img src="@photo.Path" class="d-block w-100" alt="@photo.Caption" style="height: 300px; object-fit: cover;" />
+                                                        <div class="carousel-caption d-none d-md-block bg-dark bg-opacity-50 rounded p-1">
+                                                            <span>@photo.Caption</span>
+                                                        </div>
+                                                    </div>
+                                                    first = false;
+                                                }
+                                            </div>
+
+                                            <button class="carousel-control-prev" type="button" data-target="#roomDetailsCarousel" data-slide="prev">
+                                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                                <span class="visually-hidden">Previous</span>
+                                            </button>
+                                            <button class="carousel-control-next" type="button" data-target="#roomDetailsCarousel" data-slide="next">
+                                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                                <span class="visually-hidden">Next</span>
+                                            </button>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <p class="text-muted">No photos available for this room.</p>
+                                    }
+                                </div>
+
+
+
+
+
+                            <div class="col-md-6">
+                                <div class="card-body p-4">
+                                    <h3 class="card-title text-danger mb-3">@Model.Room.RoomType</h3>
+                                    <p class="text-muted mb-2"><strong>Room number:</strong> @Model.Room.RoomNumber</p>
+
+                                    <p class="card-text">
+                                        @if (!string.IsNullOrEmpty(Model.Room.Description))
+                                        {
+                                            @Model.Room.Description
+                                        }
+                                        else
+                                        {
+                                            <span class="text-secondary">No description available for this room.</span>
+                                        }
+                                    </p>
+
+                                    <hr />
+
+                                    <ul class="list-unstyled">
+                                        <li><strong>Price per night:</strong> @Model.Room.PricePerNight.ToString("C")</li>
+                                        <li><strong>Max adults:</strong> @Model.Room.MaxAdults</li>
+                                        <li><strong>Max children:</strong> @Model.Room.MaxChildren</li>
+                                        
+                                    </ul>
+
+                                    <div class="mt-4 d-flex gap-2">
+
+                                        @if (Model.Room.IsAvailable)
+                                        {
+                                            <form method="post" asp-page-handler="Book">
+                                                <input type="hidden" name="roomId" value="@Model.Room.RoomId" />
+                                                <input type="hidden" name="checkIn" value="@Model.CheckIn?.ToString("yyyy-MM-dd")" />
+                                                <input type="hidden" name="checkOut" value="@Model.CheckOut?.ToString("yyyy-MM-dd")" />
+                                                <input type="hidden" name="nrAdults" value="@Model.NrAdults" />
+                                                <input type="hidden" name="nrChildren" value="@Model.NrChildren" />
+
+                                                    <button type="submit" id="bookRoomBtn" class="btn btn-danger" style="border-radius: 50px; font-weight:600;">
+                                                        <i class="fa fa-bed"></i> Book This Room
+                                                    </button>
+                                            </form>
+
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </section>
+    <!--================ Room Details Area =================-->
+    <!--================Footer Area =================-->
+    <footer class="footer-area section_gap">
+        <div class="container">
+            <p class="text-center">© <script>document.write(new Date().getFullYear());</script> TimisStay. All rights reserved.</p>
+        </div>
+    </footer>
+    <!--================Footer Area =================-->
+
+    @* <script src="~/js/jquery-3.2.1.min.js"></script> *@
+    <script src="~/js/popper.js"></script>
+    <script src="~/js/bootstrap.min.js"></script>
+    <script src="~/vendors/owl-carousel/owl.carousel.min.js"></script>
+    <script src="~/vendors/lightbox/simpleLightbox.min.js"></script>
+    <script src="~/js/custom.js"></script>
+
+
+    <script>
+        // Activează lightbox-ul exact ca în Gallery
+        $(document).ready(function () {
+            $('.gallery_item .light').simpleLightbox();
+        });
+    </script>
+    <script>
+        $(document).ready(function () {
+            var bookingSuccess = '@TempData["BookingSuccess"]' === 'True';
+            if (bookingSuccess) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Pending Booking!',
+                    text: 'Your reservation has been successfully created, but it needs for the receptionist\'s confirmation.',
+                    confirmButtonText: 'OK'
+                });
+            }
+
+            var bookingError = '@TempData["BookingError"]';
+            if (bookingError) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Invalid Dates',
+                    text: bookingError,
+                    confirmButtonText: 'OK'
+                });
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,222 @@
+﻿@page
+@model TimisStay.Pages.ManageRoomsModel
+@{
+    ViewData["Title"] = "Manage Rooms";
+    var numeUtilizator = HttpContext.Session.GetString("UserName");
+}
+
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>TimișStay - Manage Rooms</title>
+    <link rel="stylesheet" href="~/css/bootstrap.css" />
+    <link rel="stylesheet" href="~/css/style.css" />
+    <link rel="stylesheet" href="~/css/responsive.css" />
+
+    <style>
+        .room-card {
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            overflow: hidden;
+            transition: all 0.3s;
+            background-color: #fff;
+        }
+
+            .room-card:hover {
+                transform: translateY(-4px);
+                box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            }
+
+        .room-img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .status-badge {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            padding: 5px 10px;
+            border-radius: 5px;
+            color: #fff;
+            background-color: #28a745;
+        }
+
+            .status-badge.unavailable {
+                background-color: #dc3545;
+            }
+    </style>
+</head>
+
+<body>
+    <div class="container text-center mt-3">
+        @if (!string.IsNullOrEmpty(numeUtilizator))
+        {
+            <h5>Welcome, <strong>@numeUtilizator</strong>!</h5>
+        }
+    </div>
+
+    <!-- Banner -->
+    <section class="banner_area" style="background: url('@Url.Content("~/image/timisoara.jpg")') no-repeat center center; background-size: cover;">
+        <div style="background-color: rgba(0,0,0,0.6); padding: 60px 0;">
+            <div class="container text-center text-light">
+                <h2>Manage Rooms</h2>
+                <p>View and edit all rooms</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Rooms List -->
+    <section class="accomodation_area section_gap">
+        <div class="container">
+            @if (Model.Rooms != null && Model.Rooms.Count > 0)
+            {
+                <div class="row g-4">
+                    @foreach (var room in Model.Rooms)
+                    {
+                        <div class="col-lg-4 col-md-6 col-sm-12">
+                            <div class="room-card">
+                                <div class="position-relative">
+                                    <img src="@(room.Photo ?? Url.Content("~/image/default-room.jpg"))"
+                                         alt="@room.RoomType" class="room-img" />
+                                </div>
+                                <div class="p-3">
+                                    <h4>@room.RoomType</h4>
+                                    <p><strong>Room No:</strong> @room.RoomNumber</p>
+                                    <p><strong>Price/Night:</strong> @room.PricePerNight.ToString("C")</p>
+                                    <p><strong>Max Adults:</strong> @room.MaxAdults | <strong>Children:</strong> @room.MaxChildren</p>
+
+                                    <button type="button" class="btn btn-primary w-100 mt-2"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#editRoomModal"
+                                            data-roomid="@room.RoomId"
+                                            data-roomtype="@room.RoomType"
+                                            data-description="@room.Description"
+                                            data-price="@room.PricePerNight"
+                                            data-maxadults="@room.MaxAdults"
+                                            data-maxchildren="@room.MaxChildren"
+                                            data-photo="@room.Photo"
+                                            data-isavailable="@room.IsAvailable">
+                                        Edit Room
+                                    </button>
+
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="text-center mt-5">
+                    <h4>No rooms found.</h4>
+                </div>
+            }
+        </div>
+    </section>
+
+    <!-- Modal Edit Room -->
+    <div class="modal fade" id="editRoomModal" tabindex="-1" aria-labelledby="editRoomModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <form method="post" enctype="multipart/form-data" asp-page-handler="EditRoom">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editRoomModalLabel">Edit Room Details</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body row g-3">
+                        <input type="hidden" id="RoomId" name="RoomId" />
+
+                        <div class="col-md-6">
+                            <label class="form-label">Room Type</label>
+                            <input type="text" id="RoomType" name="RoomType" class="form-control" required />
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">Price per Night</label>
+                            <input type="number" id="PricePerNight" name="PricePerNight" class="form-control" step="0.01" required />
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">Max Adults</label>
+                            <input type="number" id="MaxAdults" name="MaxAdults" class="form-control" required />
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">Max Children</label>
+                            <input type="number" id="MaxChildren" name="MaxChildren" class="form-control" required />
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label">Description</label>
+                            <textarea id="Description" name="Description" class="form-control"></textarea>
+                        </div>
+
+                        <div class="col-12 mt-3 border-top pt-3">
+                            <h5>Add Additional Room Photos</h5>
+
+                            <div class="row g-2 mb-2">
+                                <div class="col-md-6">
+                                    <label class="form-label">Bathroom</label>
+                                    <input type="file" name="DetailPhotos_Bathroom" class="form-control" />
+                                </div>
+                            </div>
+
+                            <div class="row g-2 mb-2">
+                                <div class="col-md-6">
+                                    <label class="form-label">Living</label>
+                                    <input type="file" name="DetailPhotos_Living" class="form-control" />
+                                </div>
+                            </div>
+
+                            <div class="row g-2 mb-2">
+                                <div class="col-md-6">
+                                    <label class="form-label">Kitchen</label>
+                                    <input type="file" name="DetailPhotos_Kitchen" class="form-control" />
+                                </div>
+                            </div>
+
+                            <div class="row g-2 mb-2">
+                                <div class="col-md-6">
+                                    <label class="form-label">Other</label>
+                                    <input type="file" name="DetailPhotos_Other" class="form-control" />
+                                </div>
+                            </div>
+
+
+
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-success">Save Changes</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="~/js/jquery-3.2.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        const editModal = document.getElementById('editRoomModal');
+        if (editModal) {
+            editModal.addEventListener('show.bs.modal', event => {
+                const button = event.relatedTarget;
+                document.getElementById('RoomId').value = button.getAttribute('data-roomid');
+                document.getElementById('RoomType').value = button.getAttribute('data-roomtype');
+                document.getElementById('Description').value = button.getAttribute('data-description');
+                document.getElementById('PricePerNight').value = button.getAttribute('data-price');
+                document.getElementById('MaxAdults').value = button.getAttribute('data-maxadults');
+                document.getElementById('MaxChildren').value = button.getAttribute('data-maxchildren');
+            });
+        }
+    </script>
+
+</body>
+</html>
