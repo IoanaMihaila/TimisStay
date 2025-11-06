@@ -81,11 +81,21 @@
 
                                     <!-- 🔹 Formular ascuns care se trimite după confirmare -->
                                     <form id="cancelForm-@booking.BookingId" method="post" asp-page-handler="CancelBooking" asp-route-id="@booking.BookingId"></form>
-
+                                    @if (booking.Status != "Paid")
+                                    {
                                     <!-- 🔹 Buton Edit -->
                                     <button type="button" class="btn btn-primary btn-sm mt-2" data-bs-toggle="modal" data-bs-target="#editModal-@booking.BookingId">
                                         Edit Booking
                                     </button>
+                                    }
+                                    <!-- 🔹 Buton Pay -->
+                                    @if (booking.Status == "Confirmed" && booking.Status != "Canceled" && booking.Status != "Paid")
+                                    {
+                                        <button type="button" class="btn btn-success btn-sm mt-2" data-bs-toggle="modal" data-bs-target="#payModal-@booking.BookingId">
+                                            Pay
+                                        </button>
+                                    }
+
 
 
                                     <!-- 🔹 Modal pentru edit -->
@@ -128,7 +138,51 @@
                                             </div>
                                         </div>
                                     </div>
+                                    <!-- 🔹 Modal simulare plată -->
+                                    <div class="modal fade" id="payModal-@booking.BookingId" tabindex="-1" aria-labelledby="payModalLabel-@booking.BookingId" aria-hidden="true">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content" style="background-color:#f8f9fa;">
+                                                <form method="post" asp-page-handler="SimulatePayment" onsubmit="return validatePaymentForm(this);">
+                                                    <div class="modal-header border-bottom-0">
+                                                        <h5 class="modal-title text-dark fw-bold" id="payModalLabel-@booking.BookingId">
+                                                            Booking Payment
+                                                        </h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                    </div>
 
+                                                    <div class="modal-body text-dark">
+                                                        <input type="hidden" name="BookingId" value="@booking.BookingId" />
+
+                                                        <div class="mb-3">
+                                                            <label class="form-label fw-semibold">Card Number</label>
+                                                            <input type="text" name="CardNumber" class="form-control" placeholder="1234567812345678" maxlength="16" required />
+                                                            <div class="form-text">Enter exactly 16 digits (no spaces).</div>
+                                                        </div>
+
+                                                        <div class="row">
+                                                            <div class="col-md-6 mb-3">
+                                                                <label class="form-label fw-semibold">Expiry Date (MM/YY)</label>
+                                                                <input type="text" name="ExpiryDate" class="form-control" placeholder="MM/YY" required maxlength="5" />
+                                                            </div>
+                                                            <div class="col-md-6 mb-3">
+                                                                <label class="form-label fw-semibold">CVV</label>
+                                                                <input type="password" name="CVV" class="form-control" placeholder="123" required maxlength="3" />
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="alert alert-info text-center mt-3 mb-0">
+                                                            You are about to pay <strong>@booking.TotalPrice.ToString("C")</strong> for your booking.
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="modal-footer border-top-0">
+                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                        <button type="submit" class="btn btn-primary">Confirm Payment</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -295,5 +349,66 @@
         });
 
     </script>
+    <script>
+        function validatePaymentForm(form) {
+            const cardNumber = form.CardNumber.value.trim();
+            const expiryDate = form.ExpiryDate.value.trim();
+            const cvv = form.CVV.value.trim();
+
+            // 🔸 validare card number (16 cifre exacte)
+            const cardRegex = /^\d{16}$/;
+            if (!cardRegex.test(cardNumber)) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Invalid Card Number',
+                    text: 'Card number must contain exactly 16 digits (no spaces).'
+                });
+                return false;
+            }
+
+            // 🔸 validare CVV (3 cifre exacte)
+            const cvvRegex = /^\d{3}$/;
+            if (!cvvRegex.test(cvv)) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Invalid CVV',
+                    text: 'CVV must contain exactly 3 digits.'
+                });
+                return false;
+            }
+
+            // 🔸 validare dată expirare (MM/YY)
+            const expiryRegex = /^(0[1-9]|1[0-2])\/\d{2}$/;
+            if (!expiryRegex.test(expiryDate)) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Invalid Expiry Date',
+                    text: 'Expiry date must be in format MM/YY.'
+                });
+                return false;
+            }
+
+            // 🔸 verificare dacă data nu este în trecut
+            const [monthStr, yearStr] = expiryDate.split('/');
+            const month = parseInt(monthStr, 10);
+            const year = parseInt('20' + yearStr, 10);
+
+            const now = new Date();
+            const currentYear = now.getFullYear();
+            const currentMonth = now.getMonth() + 1;
+
+            if (year < currentYear || (year === currentYear && month < currentMonth)) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Expired Card',
+                    text: 'The card expiry date cannot be in the past.'
+                });
+                return false;
+            }
+
+            return true; // ✅ toate validările trecute
+        }
+    </script>
+
 </body>
 </html>

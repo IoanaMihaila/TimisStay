@@ -63,6 +63,11 @@
             .badge-status.canceled {
                 background-color: #dc3545;
             }
+
+            .badge-status.paid {
+                background-color: #007bff; /* albastru elegant */
+            }
+
     </style>
 </head>
 
@@ -114,10 +119,10 @@
                                     <p><strong>Period:</strong> @booking.CheckInDate.ToString("dd MMM yyyy") - @booking.CheckOutDate.ToString("dd MMM yyyy")</p>
                                     <p><strong>Adults:</strong> @booking.NrAdults | <strong>Children:</strong> @booking.NrChildren</p>
                                     <p><strong>Total Price:</strong> @booking.TotalPrice.ToString("C")</p>
-
                                     <div class="d-flex justify-content-between mt-3">
-                                        @* Afișează butonul Confirm doar dacă rezervarea NU este Confirmed *@
-                                        @if (!string.Equals(booking.Status, "Confirmed", StringComparison.OrdinalIgnoreCase))
+                                        @* Afișează butonul Confirm doar dacă rezervarea nu e Confirmed sau Paid *@
+                                        @if (!string.Equals(booking.Status, "Confirmed", StringComparison.OrdinalIgnoreCase) &&
+                                       !string.Equals(booking.Status, "Paid", StringComparison.OrdinalIgnoreCase))
                                         {
                                             <form method="post" asp-page-handler="Confirm" asp-route-bookingId="@booking.BookingId">
                                                 <button type="submit" class="btn btn-success btn-sm w-100 me-2">Confirm</button>
@@ -128,6 +133,7 @@
                                             <button type="submit" class="btn btn-danger btn-sm w-100">Delete</button>
                                         </form>
                                     </div>
+
                                 </div>
                             </div>
                         </div>
