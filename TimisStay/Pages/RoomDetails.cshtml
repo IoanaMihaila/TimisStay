@@ -25,16 +25,16 @@
 </head>
 <body>
     <!--================Breadcrumb Area =================-->
-    <section class="breadcrumb_area" style="background: url('@Url.Content("~/image/rooms-bg.jpg")') no-repeat center center; background-size: cover; position: relative;">
-        <div style="position:absolute; top:0; left:0; width:100%; height:100%; background-color: rgba(0,0,0,0.55); z-index:1;"></div>
+    <section class="breadcrumb_area" style="background: url('@Url.Content("~/image/timisoara.jpg")') no-repeat center center; background-size: cover; position: relative;">
+        <!-- overlay semi-transparent pentru efect vizual -->
+        <div style="position:absolute; top:0; left:0; width:100%; height:100%; background-color: rgba(0,0,0,0.5); z-index:1;"></div>
 
         <div class="container" style="position: relative; z-index:2;">
             <div class="page-cover text-center text-light">
                 <h2 class="page-cover-tittle">Room Details</h2>
                 <ol class="breadcrumb">
                     <li><a href="/">Home</a></li>
-                    <li><a href="/BookNow">Rooms</a></li>
-                    <li class="active">@Model.Room.RoomType</li>
+                    <li class="active">Room Details</li>
                 </ol>
             </div>
         </div>

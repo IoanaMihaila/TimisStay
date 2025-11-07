@@ -62,6 +62,7 @@ namespace TimisStay.Pages
             HttpContext.Session.SetInt32("UserId", user.UserId);
             HttpContext.Session.SetString("UserName", $"{user.FirstName} {user.LastName}");
             HttpContext.Session.SetString("UserRole", user.Role);
+            HttpContext.Session.SetString("UserEmail", user.Email);
 
             if (user.Role?.ToLower() == "receptionist")
             {
